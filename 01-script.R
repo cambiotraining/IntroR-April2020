@@ -3,7 +3,7 @@
 # Date:  20 April 2020
 #####################################
 
-#Comments in are
+#Comments in R
 
 
 ###VARIABLES
