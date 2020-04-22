@@ -1,11 +1,107 @@
+####################################
+# SCRIPT FOR DAY 2 - TIDYVERSE
+###################################
+
+#Load tidyverse package
 library(tidyverse)
 
+#load dataset in R
 surveys <- read_csv("data/portal_data_joined.csv")
+
+#check if data has loaded
+head(surveys)
+
+#print 15 rows
+print(surveys, n=15)
+
+str(surveys)
+
+#######Drawing plots
+#draw a scatter plot
+ggplot(data=surveys, mapping=aes(x=weight, y=hindfoot_length)) +
+  geom_point()
+
+# show transparency in data points - to identify density
+ggplot(data=surveys, mapping=aes(x=weight, y=hindfoot_length)) +
+  geom_point(alpha=0.1)
+
+#add colour to my data points
+ggplot(data=surveys, mapping=aes(x=weight, y=hindfoot_length)) +
+  geom_point(alpha=0.1, colour="blue")
+
+#if you would like to plot more than one plot using the same data and mapping
+surveys_plot <- ggplot(data=surveys, mapping=aes(x=weight, y=hindfoot_length)) 
+
+#draw a scatter plot
+surveys_plot +
+  geom_point()
+
+#draw a geom_smooth plot
+surveys_plot +
+  geom_smooth()
+
+#plot two different plots on top of each other
+# Adding Layers 
+surveys_plot +
+  geom_point() +
+  geom_smooth()
+
+##SELECT COLUMNS FROM A DATASET 
+#extract the columns species_id, weight, hindfoot_length, year and sex
+select(surveys, species_id, weight, hindfoot_length, year, sex)
+
+#select all columns except record_id and species_id columns
+select(surveys, -record_id, -species_id)
+
+
+##FILTERING ROWS
+
+# keep only rows (animal observations) that have been collected from 1995 onwards
+filter(surveys, year >= 1995)
+
+#filtering by multiple conditions
+#keep only animals collected from 1995 onwards AND that are female
+filter(surveys, year >=1995 & sex=="F")
+
+#which values of column weight are NA
+is.na(surveys$weight)
+
+#which values of the weight column are not missing?
+surveys[!is.na(surveys$weight),]
+
+#using dplyr
+filter(surveys, !is.na(weight), !is.na(hindfoot_length))
+
+#using drop_na
+drop_na(surveys, weight, hindfoot_length)
+
+#remove all NAs from the dataset (all missing data)
+drop_na(surveys)
+
 surveys_complete <- drop_na(surveys)
 
-surveys_recent <- surveys_complete %>%
-    select(species_id, weight, hindfoot_length, year, sex) %>%
-    filter(year >= 1995)
+
+#### PIPES
+# Different ways of using multiple functions of tidyverse together
+
+#1. using intermediate steps
+surveys2 <- select(surveys_complete, species_id, weight, hindfoot_length, year, sex)
+surveys_recent <- filter(surveys2, year>=1995)
+
+#2. using nesting
+surveys_recent <- filter(
+                    select(surveys_complete, species_id, weight, hindfoot_length, year, sex)
+                    , year >=1995)
+
+#3.  pipes %>%
+surveys_complete %>% 
+  select(species_id, weight, hindfoot_length, year, sex) %>% 
+  filter(year >= 1995)
+
+surveys_recent <- surveys_complete %>% 
+                    select(species_id, weight, hindfoot_length, year, sex) %>% 
+                    filter(year >= 1995)
+                  
 
 # Challenge 1 - Pipes
 
